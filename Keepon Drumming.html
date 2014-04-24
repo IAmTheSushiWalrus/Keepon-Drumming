@@ -9,7 +9,7 @@
 
 <body>
 
-    <!-- <div id='scrub-bar'></div> -->
+
     <div id="center">
 
 
@@ -22,10 +22,10 @@
         var h = 4;
 
         var grid = [];
-
         var drag = false;
         var mx = w / 2;
         var my = h / 2;
+
 
         for (var row = 0; row < h; row++) {
             for (var col = 0; col < w; col++) {
@@ -33,9 +33,11 @@
                     "x": col,
                     "y": row
                 };
+                
+                
             }
         }
-         // console.log(grid);
+
 
         var svg = d3.select("#center")
             .append("svg")
@@ -62,8 +64,25 @@
             .attr("data-col", function(d) {
                 return d.y;
             })
+            // .attr("click", function(d) {
+            // return 8 * d.y + d.x;
+            // });
             .attr("address", function(d) {
-                return 8 * d.y + d.x + 1;
+            return 8 * d.y + d.x + 1;
+            })
+            .on("click", function(d) { 
+                rects.transition()
+                  .duration(750)
+                  .style("fill", "lightblue")
+
+                console.log("DudeWheresMyObject",d)
+            })
+            .on("dblclick", function(d) {
+                rects.transition()
+                  .duration(750)
+                  .style("fill", "black")
+
+                console.log("ObjectOff", d)
             });
 
 
@@ -71,42 +90,44 @@
         var svgContainer = d3.select("svg")
             .append("svg")
 
-         var scrubbyPos = [
-            [0, 0, 0, 395],
-            [100, 0, 100, 395],
-            [200, 0, 200, 395],
-            [300, 0, 300, 395],
-            [400, 0, 400, 395],
-            [500, 0, 500, 395],
-            [600, 0, 600, 395],
-            [700, 0, 700, 395]
-        ]
+         //  var scrubbyPos = [
+         //     [0, 0, 0, 395],
+         //     [100, 0, 100, 395],
+         //     [200, 0, 200, 395],
+         //     [300, 0, 300, 395],
+         //     [400, 0, 400, 395],
+         //     [500, 0, 500, 395],
+         //     [600, 0, 600, 395],
+         //     [700, 0, 700, 395]
+         // ]
 
-        var scrubby = svgContainer.append("line")
+         var scrubby = svgContainer.append("line")
 
-        scrubby
-        .attr("stroke-width", 2)
-        .attr("stroke", "red");
+         scrubby
+            .attr("stroke-width", 10)
+            .attr("stroke", "red")
 
-         // d3.timer (tempo, 250)
-        window.setInterval(tempo, 500);
+         var tempoTime = 250;
+        window.setInterval(tempo, tempoTime);
 
         var j = 0;
+
         function tempo() {
-            console.log(j);
-            scrubby
-                .attr("x1", scrubbyPos[j][0])
-                .attr("y1", scrubbyPos[j][1])
-                .attr("x2", scrubbyPos[j][2])
-                .attr("y2", scrubbyPos[j][3])
+            //console.log(j);
+            scrubby.transition().ease('sin').duration(tempoTime)
 
-                j = j+1;
-                if (j > 7) { j = 0; }
+            .attr("x1", j * 100 / 2)
+                .attr("y1", 0)
+                .attr("x2", j * 100 / 2)
+                .attr("y2", 395)
+                .style("stroke-opacity", j % 2 == 0 ? 1 : -0.5)
+
+
+            j = j + 1;
+            if (j > 15) {
+                j = 0;
+            }
         }
-
-
-
-
 
 
 
@@ -116,8 +137,9 @@
 
         for (var i = 0; i < rects[0].length; i++) {
             rects[0][i].addEventListener('mouseover', function(e) {
-                    // console.log(this.getAttribute('address')); }); 
-            }); }
+                // console.log(this.getAttribute('address')); }); 
+            });
+        }
         </script>
 
 
