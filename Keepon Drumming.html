@@ -31,10 +31,9 @@
             for (var col = 0; col < w; col++) {
                 grid[row * w + col] = {
                     "x": col,
-                    "y": row
+                    "y": row,
+                    "on": 0
                 };
-                
-                
             }
         }
 
@@ -70,20 +69,35 @@
             .attr("address", function(d) {
             return 8 * d.y + d.x + 1;
             })
-            .on("click", function(d) { 
-                rects.transition()
-                  .duration(750)
-                  .style("fill", "lightblue")
+            .on("click", function(d)
+            { 
+                if (d.on) {
+                console.log(d3.select(this).x1);
+                d3.select(this).transition().ease('sin')
+                  .duration(500)
+                  .style("fill", "black") }
+                else
+                {  
+                  d3.select(this).transition()
+                  .duration(1000).ease('bounce')
+                  .style("fill", "lightblue") } 
 
-                console.log("DudeWheresMyObject",d)
+                console.log("DudeWheresMyObject", d)
+                d.on = !d.on
+                // if (d.on == 0) {
+                //     d.on = 1;
+                // } else {
+                //     d.on = 0;
+                // }
+
             })
-            .on("dblclick", function(d) {
-                rects.transition()
-                  .duration(750)
-                  .style("fill", "black")
+            // .on("dblclick", function(d) {
+            //     d3.select(this).transition()
+            //       .duration(750)
+            //       .style("fill", "black")
 
-                console.log("ObjectOff", d)
-            });
+            //     console.log("ObjectOff", d)
+            // });
 
 
 
@@ -107,7 +121,7 @@
             .attr("stroke-width", 10)
             .attr("stroke", "red")
 
-         var tempoTime = 250;
+         var tempoTime = 125;
         window.setInterval(tempo, tempoTime);
 
         var j = 0;
@@ -120,7 +134,7 @@
                 .attr("y1", 0)
                 .attr("x2", j * 100 / 2)
                 .attr("y2", 395)
-                .style("stroke-opacity", j % 2 == 0 ? 1 : -0.5)
+                .style("stroke-opacity", j % 2 == 0 ? 1 : -0.05)
 
 
             j = j + 1;
