@@ -11,4 +11,8 @@ Goals for user experience:
 
 3. The first 10 minutes of using/interacting with my project will look like: The user getting used to the interface quickly, and beginning to create drum patterns on their own. 
 
-4. By the end of this week, I’d like to be able to: Attach sounds to each row of my grid. 
+Goals for final week:
+
+To have audio running by the end of the night (Done. Thanks Dawn).
+
+To be able to present a functioning sequencer and successfully get keepon to respond to audio in any way.
