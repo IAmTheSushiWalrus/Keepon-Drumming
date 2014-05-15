@@ -1,22 +1,8 @@
-/*body {
-  background: #66FFFF;
- } */
-
-/*html { 
-  background:  url(http://media.giphy.com/media/m98JMeoy5voHu/giphy.gif) no-repeat center center fixed; 
-  background-size: cover; 
-}*/
-
 html { 
   background:  url(http://media.giphy.com/media/TmMuLtaY9vWkE/giphy.gif) no-repeat center center fixed; 
   background-size: cover; 
-  zoom: 50%;
+  zoom: 100%;
 }
-
-/*html { 
-  background:  url(http://media.giphy.com/media/5aDOia2NKeNPi/giphy.gif) no-repeat center center fixed; 
-  background-size: cover; 
-}*/
 
 #center {
     width:800px;
@@ -26,6 +12,24 @@ html {
     top:50%;
     margin:-200px 0 0 -400px;
 }
+
+/*body {
+  background: #66FFFF;
+ } */
+
+/*html { 
+  background:  url(http://media.giphy.com/media/m98JMeoy5voHu/giphy.gif) no-repeat center center fixed; 
+  background-size: cover; 
+}*/
+
+
+
+/*html { 
+  background:  url(http://media.giphy.com/media/5aDOia2NKeNPi/giphy.gif) no-repeat center center fixed; 
+  background-size: cover; 
+}*/
+
+
 /*#center { 
   background:  url(http://media.giphy.com/media/m98JMeoy5voHu/giphy.gif) no-repeat center center fixed; 
   background-size: cover;
