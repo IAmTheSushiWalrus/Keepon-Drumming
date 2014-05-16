@@ -1,0 +1,536 @@
+<html>
+<meta charset="utf-8">
+
+<head>
+    <script src="d3-master/d3.js" type="text/javascript"></script>
+    <script src="buffer-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div id="center">
+        <script>
+        //For audio to work, remember to disable web security in terminal before launching app: "open /Applications/Google\ Chrome.app --args --disable-web-security" //
+
+        window.onload = init;
+        var context;
+        var bufferLoader;
+
+        function init() {
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+            context = new AudioContext();
+
+            bufferLoader = new BufferLoader(
+                context, [
+                    'Kick.wav',
+                    'Snare.wav',
+                    'Clap.wav',
+                    'HiHat.wav',
+                ],
+                finishedLoading
+            );
+
+            bufferLoader.load();
+        }
+
+        var t = 0;
+
+        var kick;
+        var snare;
+        var clap;
+        var hihat;
+
+        function finishedLoading(bufferList) {
+            var kickSrc = context.createBufferSource();
+            var snareSrc = context.createBufferSource();
+            var clapSrc = context.createBufferSource();
+            var hihatSrc = context.createBufferSource();
+
+            kick = bufferList[0];
+            snare = bufferList[1];
+            clap = bufferList[2];
+            hihat = bufferList[3];
+        }
+
+        function playSound(buffer) {
+            var src = context.createBufferSource();
+            src.buffer = buffer;
+            src.connect(context.destination);
+            if (!src.start) {
+                src.start = src.noteOn;
+            }
+            src.start(0);
+        }
+
+        var gridSize = 100;
+
+         //Width and height
+        var w = 8;
+        var h = 4;
+
+        var grid = [];
+        var drag = false;
+        var mx = w / 2;
+        var my = h / 2;
+
+
+        for (var row = 0; row < h; row++) {
+            for (var col = 0; col < w; col++) {
+                grid[row * w + col] = {
+                    "x": col,
+                    "y": row,
+                    "on": 0
+                };
+            }
+        }
+
+        var svg = d3.select("#center")
+            .append("svg")
+            .attr("width", w * gridSize)
+            .attr("height", h * gridSize);
+
+        var rects = svg.selectAll("rect")
+            .data(grid)
+            .enter()
+            .append("rect")
+            .attr("x", function(d) {
+                return d.x * 100;
+            })
+            .attr("y", function(d) {
+                return d.y * 100;
+            })
+            .attr("width", 95)
+            .attr("height", 95)
+            .attr("data-row", function(d) {
+                return d.x;
+            })
+            .attr("data-col", function(d) {
+                return d.y;
+            })
+         // .attr("click", function(d) {
+         // return 8 * d.y + d.x;
+         // });
+        .attr("address", function(d) {
+            return 8 * d.y + d.x + 1;
+        })
+        // .attr("on", false)
+         //     .on("click", function(d) {
+         //             if (d.on) {
+         //                 d3.select(this)
+         //                 playSound(snare);
+         //             } else {
+         //                 d3.select(this)
+         //                 playSound(hihat);
+         //             }
+
+         //                    d.on = !d.on
+         //         // if (d.on == 0) {
+         //         //     d.on = 1;
+         //         // } else {
+         //         //     d.on = 0;
+         //         // }
+         // })
+        .on("click", function(d) {
+            if (d.on) {
+                console.log(d3.select(this).x1);
+                d3.select(this).transition().ease('sin')
+                    .duration(500)
+                    .style("fill", "black")
+                    .attr("on", false)
+                // playSound(snare);
+            } else {
+                d3.select(this).transition()
+                    .duration(1000).ease('bounce')
+                    .style("fill", "lightblue")
+                    .attr("on", true)
+                // playSound(hihat);
+            }
+
+            console.log("DudeWheresMyObject", d)
+            console.log(this.getAttribute("on"))
+            d.on = !d.on
+            //     // if (d.on == 0) {
+            //     //     d.on = 1;
+            //     // } else {
+            //     //     d.on = 0;
+            //     // }
+
+            // })
+            // .on("dblclick", function(d) {
+            //     d3.select(this).transition()
+            //       .duration(750)
+            //       .style("fill", "black")
+
+            //     console.log("ObjectOff", d)
+        });
+
+//            rects[0][0].addEventListener('mouseover', function(e) {
+//             console.log(this.getAttribute('address'));
+// } );
+
+//         for (var i = 0; i < rects[0].length; i++) {
+//             rects[0][i].addEventListener('mouseover', function(e) {
+//                 console.log(this.getAttribute('address')); 
+//             }); 
+
+        var svgContainer = d3.select("svg")
+            .append("svg")
+
+         //  var scrubbyPos = [
+         //     [0, 0, 0, 395],
+         //     [100, 0, 100, 395],
+         //     [200, 0, 200, 395],
+         //     [300, 0, 300, 395],
+         //     [400, 0, 400, 395],
+         //     [500, 0, 500, 395],
+         //     [600, 0, 600, 395],
+         //     [700, 0, 700, 395]
+         // ]
+
+         var scrubby = svgContainer.append("line")
+
+         scrubby
+            .attr("stroke-width", 10)
+            .attr("stroke", "red")
+
+         var tempoTime = 100;
+        window.setInterval(tempo, tempoTime);
+
+        var j = 0;
+        console.log("is this on? ", rects[0][0].getAttribute("on"))
+
+        function tempo() {
+            //console.log(j);
+            scrubby.transition().ease('sin').duration(tempoTime)
+
+            .attr("x1", j * 100 / 2)
+                .attr("y1", 0)
+                .attr("x2", j * 100 / 2)
+                .attr("y2", 395)
+                .style("stroke-opacity", j % 2 == 0 ? 1 : -0.05)
+
+            j = j + 1;
+            if (j > 15) {
+                j = 0;
+            }
+
+            t = (t + 1) % 16;
+            if (t % 2 == 0) {
+                console.log(t)
+                // console.log("rects[0].length: ", rects[0].length)
+            }
+            
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 0 && rects[0][0].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(kick);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 0 && rects[0][8].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(snare);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 0 && rects[0][16].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(clap);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 0 && rects[0][24].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(hihat);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 2 && rects[0][1].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(kick);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 2 && rects[0][9].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(snare);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 2 && rects[0][17].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(clap);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 2 && rects[0][25].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(hihat);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 4 && rects[0][2].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(kick);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 4 && rects[0][10].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(snare);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 4 && rects[0][18].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(clap);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 4 && rects[0][26].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(hihat);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 6 && rects[0][3].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(kick);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 6 && rects[0][11].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(snare);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 6 && rects[0][19].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(clap);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 6 && rects[0][27].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(hihat);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 8 && rects[0][4].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(kick);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 8 && rects[0][12].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(snare);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 8 && rects[0][20].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(clap);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 8 && rects[0][28].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(hihat);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 10 && rects[0][5].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(kick);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 10 && rects[0][13].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(snare);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 10 && rects[0][21].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(clap);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 10 && rects[0][29].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(hihat);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 12 && rects[0][6].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(kick);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 12 && rects[0][14].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(snare);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 12 && rects[0][22].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(clap);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 12 && rects[0][30].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(hihat);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 14 && rects[0][7].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(kick);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 14 && rects[0][15].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(snare);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 14 && rects[0][23].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(clap);
+                        // console.log("you should hear something");
+           
+                }
+            }
+
+            for (var i =0; i< rects[0].length; i++){
+                       if(t == 14 && rects[0][31].getAttribute("on")=="true"){
+                        // console.log("it works")
+                        playSound(hihat);
+                        //  b
+           
+                }
+            }
+
+
+}
+
+                   
+                    
+                // }
+                // else if(i%8 == 1){
+                //    console.log("i:", i) 
+                // }
+                // else if(i%8 == 2){
+                //    console.log("i:", i) 
+                // }
+                // else if(i%8 == 3){
+                //    console.log("i:", i) 
+                // }
+            // }
+            // if (t == 14 && rects[0][0]) {
+            //     // playSound(snare);
+            //     // console.log("you should hear something");
+            // };
+
+        </script>
+    </div>
+</body>
+
+</html>
