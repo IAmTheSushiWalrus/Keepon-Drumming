@@ -62,9 +62,9 @@
             src.start(0);
         }
 
+        //create D3 grid//
         var gridSize = 100;
 
-         //Width and height
         var w = 8;
         var h = 4;
 
@@ -84,6 +84,8 @@
             }
         }
 
+        //Animate grid the and add attributes//
+        
         var svg = d3.select("#center")
             .append("svg")
             .attr("width", w * gridSize)
@@ -107,85 +109,36 @@
             .attr("data-col", function(d) {
                 return d.y;
             })
-         // .attr("click", function(d) {
-         // return 8 * d.y + d.x;
-         // });
-        .attr("address", function(d) {
-            return 8 * d.y + d.x + 1;
-        })
-        // .attr("on", false)
-         //     .on("click", function(d) {
-         //             if (d.on) {
-         //                 d3.select(this)
-         //                 playSound(snare);
-         //             } else {
-         //                 d3.select(this)
-         //                 playSound(hihat);
-         //             }
-
-         //                    d.on = !d.on
-         //         // if (d.on == 0) {
-         //         //     d.on = 1;
-         //         // } else {
-         //         //     d.on = 0;
-         //         // }
-         // })
-        .on("click", function(d) {
+            .attr("address", function(d) {
+                return 8 * d.y + d.x + 1;
+            })
+            .on("click", function(d) {
             if (d.on) {
                 console.log(d3.select(this).x1);
                 d3.select(this).transition().ease('sin')
                     .duration(500)
                     .style("fill", "black")
                     .attr("on", false)
-                // playSound(snare);
+        
             } else {
                 d3.select(this).transition()
                     .duration(1000).ease('bounce')
                     .style("fill", "lightblue")
                     .attr("on", true)
-                // playSound(hihat);
+           
             }
 
             console.log("DudeWheresMyObject", d)
             console.log(this.getAttribute("on"))
             d.on = !d.on
-            //     // if (d.on == 0) {
-            //     //     d.on = 1;
-            //     // } else {
-            //     //     d.on = 0;
-            //     // }
-
-            // })
-            // .on("dblclick", function(d) {
-            //     d3.select(this).transition()
-            //       .duration(750)
-            //       .style("fill", "black")
-
-            //     console.log("ObjectOff", d)
         });
 
-//            rects[0][0].addEventListener('mouseover', function(e) {
-//             console.log(this.getAttribute('address'));
-// } );
-
-//         for (var i = 0; i < rects[0].length; i++) {
-//             rects[0][i].addEventListener('mouseover', function(e) {
-//                 console.log(this.getAttribute('address')); 
-//             }); 
+          
+        //Set the tempo, loop it, animate the line and have it listen for on/off attribute of each rect //
 
         var svgContainer = d3.select("svg")
             .append("svg")
 
-         //  var scrubbyPos = [
-         //     [0, 0, 0, 395],
-         //     [100, 0, 100, 395],
-         //     [200, 0, 200, 395],
-         //     [300, 0, 300, 395],
-         //     [400, 0, 400, 395],
-         //     [500, 0, 500, 395],
-         //     [600, 0, 600, 395],
-         //     [700, 0, 700, 395]
-         // ]
 
          var scrubby = svgContainer.append("line")
 
@@ -200,7 +153,6 @@
         console.log("is this on? ", rects[0][0].getAttribute("on"))
 
         function tempo() {
-            //console.log(j);
             scrubby.transition().ease('sin').duration(tempoTime)
 
             .attr("x1", j * 100 / 2)
@@ -217,9 +169,10 @@
             t = (t + 1) % 16;
             if (t % 2 == 0) {
                 console.log(t)
-                // console.log("rects[0].length: ", rects[0].length)
+
             }
             
+            //Roll the drums!//
             for (var i =0; i< rects[0].length; i++){
                        if(t == 0 && rects[0][0].getAttribute("on")=="true"){
                         // console.log("it works")
@@ -503,31 +456,13 @@
                        if(t == 14 && rects[0][31].getAttribute("on")=="true"){
                         // console.log("it works")
                         playSound(hihat);
-                        //  b
+                        // console.log("you should hear something");
            
                 }
             }
 
 
 }
-
-                   
-                    
-                // }
-                // else if(i%8 == 1){
-                //    console.log("i:", i) 
-                // }
-                // else if(i%8 == 2){
-                //    console.log("i:", i) 
-                // }
-                // else if(i%8 == 3){
-                //    console.log("i:", i) 
-                // }
-            // }
-            // if (t == 14 && rects[0][0]) {
-            //     // playSound(snare);
-            //     // console.log("you should hear something");
-            // };
 
         </script>
     </div>
